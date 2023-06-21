@@ -1,0 +1,33 @@
+pip install pgmpy
+
+import numpy as np
+import pandas as pd
+import csv
+from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.models import BayesianNetwork
+from pgmpy.inference import VariableElimination
+
+trainingData = pd.read_csv('/kaggle/input/heartdisease/heart.csv')
+trainingData = trainingData.replace('?',np.nan)
+print('The sample instances from the dataset are:')
+print(trainingData.head())
+print('\n Attributes and datatypes: ')
+print(trainingData.dtypes)
+
+model = BayesianNetwork([('age','target'),('sex','target'),('exang','target'),('cp','target'),('target','restecg'),('target','chol')])
+print('\n Learning CPD using Maximum likelihood estimators')
+model.fit(trainingData,estimator=MaximumLikelihoodEstimator)
+print('\n Inferencing with Bayesian Network:')
+HeartDiseasetest_infer = VariableElimination(model)
+
+print('\n 1.Probability of HeartDisease given evidence = restecg (Rest ECG): 1')
+q1 = HeartDiseasetest_infer.query(variables = ['target'], evidence={'restecg':1})
+print(q1)
+
+print('\n 2.Probability of HeartDisease given evidence = chol (Cholestorol): 1 ')
+q2 = HeartDiseasetest_infer.query(variables = ['target'], evidence={'chol':174})
+print(q2)
+
+print('\n 2.Probability of HeartDisease given evidence = chol (Cholestorol): 174 ')
+q2 = HeartDiseasetest_infer.query(variables = ['target'], evidence={'chol':174})
+print(q2)
